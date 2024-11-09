@@ -1,6 +1,7 @@
 import { RandomFox } from "@/components/RandomFox";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
 
 const random = () => {
   const typedArray = new Uint8Array(1);
@@ -12,7 +13,20 @@ const getRandomValue = (limit: number) => {
   return Math.floor(random() * limit) + 1;
 };
 
+const generateUniqueId = (): string => {
+  return Math.random().toString(36).substring(2, 11);
+};
+
+type ImageItem = { id: string, url: string, };
+
 const Home: NextPage = () => {
+  const [images, setImages] = useState<Array<ImageItem>>([
+    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` },
+    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` },
+    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` },
+    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` }
+  ]);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Head>
@@ -21,7 +35,13 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <RandomFox image={ `https://randomfox.ca/images/${getRandomValue(123)}.jpg` } />
+        {
+          images.map(({ id, url }) => (
+            <div key={id} className="p-4">
+              <RandomFox image={ url } />
+            </div>
+          ))
+        }
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </div>
