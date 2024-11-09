@@ -1,7 +1,8 @@
-import { RandomFox } from "@/components/RandomFox";
+import { LazyImage } from "@/components/LazyImage";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
+import Plausible from "./plausible";
 
 const random = () => {
   const typedArray = new Uint8Array(1);
@@ -20,12 +21,27 @@ const generateUniqueId = (): string => {
 type ImageItem = { id: string, url: string, };
 
 const Home: NextPage = () => {
-  const [images, setImages] = useState<Array<ImageItem>>([
-    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` },
-    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` },
-    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` },
-    { id: generateUniqueId(), url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg` }
-  ]);
+  const [images, setImages] = useState<Array<ImageItem>>([]);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://plausible.io/js/plausible.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }, []);
+
+  const addNewFox: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    const newItem: ImageItem = {
+      id: generateUniqueId(),
+      url: `https://randomfox.ca/images/${getRandomValue(123)}.jpg`
+    };
+    setImages([
+      ...images,
+      newItem
+    ]);
+  };
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -35,10 +51,20 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <button onClick={addNewFox} >Add new Fox</button>
         {
-          images.map(({ id, url }) => (
+          images.map(({ id, url }, index) => (
             <div key={id} className="p-4">
-              <RandomFox image={ url } />
+              <LazyImage 
+                src={ url } 
+                title="Random Fox"
+                width="320" 
+                height="auto" 
+                className="mx-auto rounded-md bg-gray-300"
+                onLazyLoad={(img) => {
+                  console.log(`Image #${index + 1} cargada. Nodo:`, img);
+                }}
+              />
             </div>
           ))
         }
