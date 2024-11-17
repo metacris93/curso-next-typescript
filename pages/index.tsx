@@ -2,7 +2,6 @@ import { LazyImage } from "@/components/LazyImage";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { MouseEventHandler, useEffect, useState } from "react";
-import Plausible from "./plausible";
 
 const random = () => {
   const typedArray = new Uint8Array(1);
